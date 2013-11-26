@@ -3,14 +3,16 @@ var App = {};
 App.Storage = function(sessionId) {
     return {
         restore: function(topic, populateFn) {
-            var store = JSON.parse(localStorage[sessionId]);
+            var store = localStorage[sessionId];
             if(store) {
+                store = JSON.parse(store);
                 populateFn(store[topic]);
             }
         },
-        save: function(data) {
-            var store = JSON.parse(localStorage[sessionId]) || {};
-            store[data.topic] = data.content;
+        save: function(topic, data) {
+            var store = localStorage[sessionId];
+            store = (store && JSON.parse(store)) || {};
+            store[topic] = data;
             localStorage[sessionId] = JSON.stringify(store);
         }
     }
@@ -61,10 +63,7 @@ App.run = function() {
 
     function storeLanguage(store, languageChooser) {
         languageChooser.addEventListener("change", function() {
-            store.save({
-                topic:"language",
-                content: languageChooser.value
-            });
+            store.save("language", languageChooser.value);
         });
         store.restore("language", function(data) {
             languageChooser.value = data;
@@ -79,10 +78,7 @@ App.run = function() {
                 clearTimeout(saveHandle);
 
             saveHandle = setTimeout(function() {
-                store.save({
-                    topic:"editor",
-                    content: editor.getSession().getValue()
-                });
+                store.save("editor", editor.getSession().getValue());
             }, 3000);
         }, false);
         store.restore("editor", function(data) {
