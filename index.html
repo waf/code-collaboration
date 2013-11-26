@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>X by 2 Code Share</title>
+        <link rel="stylesheet" href="style.css" />
+        <script src="togetherjs-config.js"></script>
+        <script src="https://togetherjs.com/togetherjs-min.js"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/ace/1.1.01/ace.js"></script>
+        <script src="collab.js"></script>
+        <script>
+            window.addEventListener("load", function() {
+                App.run();
+            }, false);
+        </script>
+    </head>
+    <body>
+        <div id="controls">
+            <img src="logo.svg" alt="X by 2" />
+            <select id="language">
+                <option value="" disabled selected>Select Language</option>k
+            	<option value="c_cpp">C/C++</option>
+            	<option value="clojure">Clojure</option>
+            	<option value="csharp">C#</option>
+            	<option value="golang">Go</option>
+            	<option value="haskell">Haskell</option>
+            	<option value="html">HTML</option>
+            	<option value="java">Java</option>
+            	<option value="javascript">JavaScript</option>
+            	<option value="php">PHP</option>
+            	<option value="python">Python</option>
+            	<option value="ruby">Ruby</option>
+            	<option value="scala">Scala</option>
+            	<option value="sql">SQL</option>
+            	<option value="vbscript">VBScript</option>
+            </select>
+            <button id="share">Share</button>
+        </div>
+        <div id="editor"></div>
+    </body>
+</html>
