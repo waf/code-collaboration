@@ -7,6 +7,9 @@ var TogetherJSConfig_disableWebRTC = true;
 var TogetherJSConfig_includeHashInUrl = true;
 var TogetherJSConfig_youtube = false;
 var TogetherJSConfig_getUserName = function () {return 'Fellow Coder';};
+if(window.localStorage) {
+    window.localStorage["togetherjs.settings.seenIntroDialog"] = true;
+}
 var TogetherJSConfig_on = {
     ready: function () {
         var share = document.getElementById("share");
