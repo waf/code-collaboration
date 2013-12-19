@@ -14,7 +14,7 @@ App.Storage = function(sessionId) {
     return {
         // save the provided data under the given key
         save: function(key, data) {
-            var store = readFromStorage(key) || {};
+            var store = readFromStorage(sessionId) || {};
             store.expiration = expiration;
             store[key] = data;
             localStorage[sessionId] = JSON.stringify(store);
@@ -22,7 +22,7 @@ App.Storage = function(sessionId) {
         // given a key and a callback function, call the 
         // function, passing in the key's associated data 
         restore: function(key, populateFn) {
-            var store = readFromStorage(key);
+            var store = readFromStorage(sessionId);
             if(store) {
                 populateFn(store[key]);
             }
