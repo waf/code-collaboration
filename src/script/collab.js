@@ -1,19 +1,35 @@
 var App = {};
 
 App.Storage = function(sessionId) {
+    var today = new Date(),
+        expiration = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
+
+    function readFromStorage(key) {
+        var store = localStorage[key];
+        return store ? JSON.parse(store) : null;
+    }
+
     return {
         restore: function(topic, populateFn) {
-            var store = localStorage[sessionId];
+            var store = readFromStorage(topic);
             if(store) {
-                store = JSON.parse(store);
                 populateFn(store[topic]);
             }
         },
         save: function(topic, data) {
-            var store = localStorage[sessionId];
-            store = (store && JSON.parse(store)) || {};
+            var store = readFromStorage(topic) || {};
+            store.expiration = expiration;
             store[topic] = data;
             localStorage[sessionId] = JSON.stringify(store);
+        },
+        expireOldValues: function() {
+            Object.keys(localStorage).filter(function(i) { 
+                if(i[0] !== "#") return false;
+                var store = readFromStorage(i);
+                return store && new Date(store.expiration) < today;
+            }).map(function(e) { 
+                localStorage.removeItem(e);
+            });
         }
     }
 };
@@ -46,8 +62,9 @@ App.run = function() {
             if(!document.location.hash)
                 document.location.hash = "#" + Math.random().toString(36).substring(7);
             var store = new App.Storage(document.location.hash);
-            storeLanguage(store, languageChooser);
-            storeContent(store, editor);
+            initLanguageStore(store, languageChooser);
+            initContentStore(store, editor);
+            store.expireOldValues();
         }
     })();
 
@@ -61,7 +78,7 @@ App.run = function() {
         return editor;
     }
 
-    function storeLanguage(store, languageChooser) {
+    function initLanguageStore(store, languageChooser) {
         languageChooser.addEventListener("change", function() {
             store.save("language", languageChooser.value);
         });
@@ -71,7 +88,7 @@ App.run = function() {
         });
     }
 
-    function storeContent(store, editor) {
+    function initContentStore(store, editor) {
         var saveHandle;
         editor.addEventListener("change", function() {
             if(saveHandle)
