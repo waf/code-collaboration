@@ -1,6 +1,8 @@
 var App = {};
 
+// client-side storage api, uses localStorage under the hood
 App.Storage = function(sessionId) {
+    // expiration date is one month from today.
     var today = new Date(),
         expiration = new Date(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
@@ -10,17 +12,20 @@ App.Storage = function(sessionId) {
     }
 
     return {
-        restore: function(topic, populateFn) {
-            var store = readFromStorage(topic);
-            if(store) {
-                populateFn(store[topic]);
-            }
-        },
-        save: function(topic, data) {
-            var store = readFromStorage(topic) || {};
+        // save the provided data under the given key
+        save: function(key, data) {
+            var store = readFromStorage(key) || {};
             store.expiration = expiration;
-            store[topic] = data;
+            store[key] = data;
             localStorage[sessionId] = JSON.stringify(store);
+        },
+        // given a key and a callback function, call the 
+        // function, passing in the key's associated data 
+        restore: function(key, populateFn) {
+            var store = readFromStorage(key);
+            if(store) {
+                populateFn(store[key]);
+            }
         },
         expireOldValues: function() {
             Object.keys(localStorage).filter(function(i) { 
@@ -78,6 +83,7 @@ App.run = function() {
         return editor;
     }
 
+    // programming language selectbox can save/restore its value via localStorage
     function initLanguageStore(store, languageChooser) {
         languageChooser.addEventListener("change", function() {
             store.save("language", languageChooser.value);
@@ -88,6 +94,7 @@ App.run = function() {
         });
     }
 
+    // editor can save/restore its value localStorage 
     function initContentStore(store, editor) {
         var saveHandle;
         editor.addEventListener("change", function() {
